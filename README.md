@@ -1,31 +1,28 @@
-# What Do I Watch?
+# What Do I Watch? (Django)
 
-A Next.js application that helps users discover movies and get personalized recommendations.
+A Django web application for finding movies and generating recommendations using the TMDB and Watchmode APIs. The interface is responsive for desktop and mobile and styled with a minimal streaming-site aesthetic.
 
 ## Setup
 
 1. Install dependencies:
    ```bash
-   npm install
+   pip install -r requirements.txt
    ```
-2. Create a `.env.local` based on `.env.example` and provide your API keys:
-   ```
-   TMDB_API_KEY=your_tmdb_key
-   WATCHMODE_API_KEY=your_watchmode_key
-   ```
-3. Run the development server:
+2. Configure API keys in `whatdoiwatch/settings.py`.
+3. Run database migrations (uses SQLite by default):
    ```bash
-   npm run dev
+   python manage.py migrate
+   ```
+4. Start the development server:
+   ```bash
+   python manage.py runserver
    ```
 
 ## Features
-- Filter movies by genre and release timeframe (this month, this year, this decade, last decade, this century, old, ancient).
-- Display posters, synopsis, cast, release date, IMDb rating, and streaming platforms.
-- Select up to 10 favorite movies and receive 5 similar recommendations that respect the chosen genre and timeframe.
-- Responsive UI styled with Tailwind CSS.
 
-## Testing
-Build the project to ensure TypeScript and Next.js compile:
-```bash
-npm test
-```
+- Browse movies by genre and release time range
+- Search movies and select up to 10 titles
+- Receive tailored recommendations
+- Responsive design for desktop and mobile
+
+Replace the placeholder API keys in settings before deploying.
