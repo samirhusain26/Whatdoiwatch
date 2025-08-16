@@ -1,11 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 import { getDateRange, getWatchmodeData } from '../../lib/movies';
-import { TMDB_API_KEY } from '../../lib/apiKeys';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { genre, time } = req.query;
-  if (!TMDB_API_KEY) {
     res.status(500).json({ error: 'Missing TMDB API key' });
     return;
   }
@@ -13,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const discover = await axios.get('https://api.themoviedb.org/3/discover/movie', {
       params: {
-        api_key: TMDB_API_KEY,
+
         with_genres: genre,
         sort_by: 'popularity.desc',
         'primary_release_date.gte': start,
@@ -24,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const results = await Promise.all(
       movies.map(async (m: any) => {
         const details = await axios.get(`https://api.themoviedb.org/3/movie/${m.id}`, {
-          params: { api_key: TMDB_API_KEY, append_to_response: 'credits' },
+
         });
         const cast = details.data.credits.cast.slice(0, 5).map((c: any) => c.name);
         const watch = await getWatchmodeData(m.id);

@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { WATCHMODE_API_KEY } from './apiKeys';
 
 export function getDateRange(category: string) {
   const today = new Date();
@@ -45,7 +44,7 @@ export function getDateRange(category: string) {
 }
 
 export async function getWatchmodeData(tmdbId: number) {
-  const apiKey = WATCHMODE_API_KEY;
+
   try {
     const search = await axios.get('https://api.watchmode.com/v1/search/', {
       params: { apiKey, search_field: 'tmdb_id', search_value: tmdbId },

@@ -8,8 +8,7 @@ A Next.js application that helps users discover movies and get personalized reco
    ```bash
    npm install
    ```
-2. API keys for TMDB and Watchmode are embedded directly in `lib/apiKeys.ts` for convenience.
-   Replace them there if you use your own keys.
+
 3. Run the development server:
    ```bash
    npm run dev
