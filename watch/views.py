@@ -73,32 +73,45 @@ def search(request):
 
 
 def recommendations(request):
-    ids = request.GET.get("ids")
-    if not ids:
-        return JsonResponse({"error": "Missing ids"}, status=400)
+    ids = request.GET.get("ids", "")
     genre = request.GET.get("genre")
     time = request.GET.get("time", "")
     api_key = settings.TMDB_API_KEY
-    id_list = ids.split(",")
-    candidates = []
-    for movie_id in id_list:
-        rec = requests.get(
-            f"https://api.themoviedb.org/3/movie/{movie_id}/recommendations",
-            params={"api_key": api_key},
-        )
-        candidates.extend(rec.json().get("results", []))
-    unique = {m["id"]: m for m in candidates}.values()
+    id_list = [i for i in ids.split(",") if i]
     start, end = get_date_range(time)
-    filtered = [
-        m
-        for m in unique
-        if (not genre or int(genre) in m.get("genre_ids", []))
-        and (not start or m.get("release_date", "") >= start)
-        and (not end or m.get("release_date", "") <= end)
-        and str(m["id"]) not in id_list
-    ]
-    top = filtered[:5]
     results = []
+
+    if id_list:
+        candidates = []
+        for movie_id in id_list:
+            rec = requests.get(
+                f"https://api.themoviedb.org/3/movie/{movie_id}/recommendations",
+                params={"api_key": api_key},
+            )
+            candidates.extend(rec.json().get("results", []))
+        unique = {m["id"]: m for m in candidates}.values()
+        filtered = [
+            m
+            for m in unique
+            if (not genre or int(genre) in m.get("genre_ids", []))
+            and (not start or m.get("release_date", "") >= start)
+            and (not end or m.get("release_date", "") <= end)
+            and str(m["id"]) not in id_list
+        ]
+        top = filtered[:5]
+    else:
+        discover = requests.get(
+            "https://api.themoviedb.org/3/discover/movie",
+            params={
+                "api_key": api_key,
+                "with_genres": genre,
+                "sort_by": "popularity.desc",
+                "primary_release_date.gte": start,
+                "primary_release_date.lte": end,
+            },
+        )
+        top = discover.json().get("results", [])[:5]
+
     for m in top:
         details = requests.get(
             f"https://api.themoviedb.org/3/movie/{m['id']}",

@@ -5,34 +5,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>What Do I Watch?</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'watch/styles.css' %}">
 </head>
-<body>
-<div class="container">
-    <h1>What Do I Watch?</h1>
-
-    <section>
-        <h2>Browse Movies</h2>
-        <div class="controls">
-            <select id="genre">
-                <option value="">Select Genre</option>
+<body class="bg-dark text-white">
+<div class="container min-vh-100 d-flex flex-column justify-content-center">
+    <h1 class="text-center mb-4">What Do I Watch?</h1>
+    <div class="card bg-secondary p-4 mx-auto" style="max-width: 600px;">
+        <div class="mb-3">
+            <label for="genre" class="form-label">Genre</label>
+            <select id="genre" class="form-select">
+                <option value="">Any Genre</option>
             </select>
-            <select id="time"></select>
-            <button onclick="findMovies()">Find Movies</button>
         </div>
-        <div id="movies" class="movies"></div>
-    </section>
-
-    <section>
-        <h2>Recommendation Engine</h2>
-        <div class="search-box">
-            <input id="query" type="text" placeholder="Search movies" oninput="searchMovies(this.value)">
-            <div id="suggestions" class="suggestions"></div>
+        <div class="mb-3">
+            <label for="time" class="form-label">Year</label>
+            <select id="time" class="form-select">
+                <option value="">Any Time</option>
+            </select>
         </div>
-        <div id="selected" class="selected"></div>
-        <button onclick="getRecommendations()">Get Recommendations</button>
-        <div id="recommendations" class="movies"></div>
-    </section>
+        <div class="mb-3 position-relative">
+            <label for="query" class="form-label">Liked Movies</label>
+            <input id="query" type="text" class="form-control" placeholder="Search movies" oninput="searchMovies(this.value)">
+            <div id="suggestions" class="suggestions list-group"></div>
+        </div>
+        <div id="selected" class="selected mb-3"></div>
+        <button class="btn btn-primary w-100" onclick="getRecommendations()">Get Recommendations</button>
+    </div>
+    <div id="description" class="text-center mt-4"></div>
+    <div id="recommendations" class="movies mt-3 justify-content-center"></div>
 </div>
 <script src="{% static 'watch/main.js' %}"></script>
 </body>
