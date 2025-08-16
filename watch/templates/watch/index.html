@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Do I Watch?</title>
+    <link rel="stylesheet" href="{% static 'watch/styles.css' %}">
+</head>
+<body>
+<div class="container">
+    <h1>What Do I Watch?</h1>
+
+    <section>
+        <h2>Browse Movies</h2>
+        <div class="controls">
+            <select id="genre">
+                <option value="">Select Genre</option>
+            </select>
+            <select id="time"></select>
+            <button onclick="findMovies()">Find Movies</button>
+        </div>
+        <div id="movies" class="movies"></div>
+    </section>
+
+    <section>
+        <h2>Recommendation Engine</h2>
+        <div class="search-box">
+            <input id="query" type="text" placeholder="Search movies" oninput="searchMovies(this.value)">
+            <div id="suggestions" class="suggestions"></div>
+        </div>
+        <div id="selected" class="selected"></div>
+        <button onclick="getRecommendations()">Get Recommendations</button>
+        <div id="recommendations" class="movies"></div>
+    </section>
+</div>
+<script src="{% static 'watch/main.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+body {
+    background: #111;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+}
+.container {
+    padding: 1rem;
+}
+h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+.controls select, .controls button, .search-box input {
+    padding: 0.5rem;
+    margin-right: 0.5rem;
+    color: #000;
+}
+.movies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.movie-card {
+    background: #222;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 200px;
+}
+.movie-card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+.movie-card .info {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+}
+.selected span {
+    background: #2563eb;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    margin: 0.25rem;
+    display: inline-block;
+    cursor: pointer;
+}
+.suggestions {
+    position: absolute;
+    background: #fff;
+    color: #000;
+    width: 200px;
+    max-height: 200px;
+    overflow: auto;
+    z-index: 10;
+}
+.suggestions div {
+    padding: 0.25rem;
+    cursor: pointer;
+}
+.suggestions div:hover {
+    background: #eee;
+}
+@media (max-width: 600px) {
+    .movies {
+        flex-direction: column;
+        align-items: center;
+    }
+    .movie-card {
+        width: 100%;
+    }
+}
