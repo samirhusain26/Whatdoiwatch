@@ -9,6 +9,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(400).json({ error: 'Missing ids' });
     return;
   }
+  if (!TMDB_API_KEY) {
+    res.status(500).json({ error: 'Missing TMDB API key' });
+    return;
+  }
   const idArray = ids.split(',');
   const candidates: any[] = [];
   try {

@@ -8,6 +8,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(400).json({ error: 'Missing query' });
     return;
   }
+  if (!TMDB_API_KEY) {
+    res.status(500).json({ error: 'Missing TMDB API key' });
+    return;
+  }
   try {
     const response = await axios.get('https://api.themoviedb.org/3/search/movie', {
       params: { api_key: TMDB_API_KEY, query },

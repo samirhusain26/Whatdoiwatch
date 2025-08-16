@@ -5,6 +5,10 @@ import { TMDB_API_KEY } from '../../lib/apiKeys';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { genre, time } = req.query;
+  if (!TMDB_API_KEY) {
+    res.status(500).json({ error: 'Missing TMDB API key' });
+    return;
+  }
   const { start, end } = getDateRange(typeof time === 'string' ? time : '');
   try {
     const discover = await axios.get('https://api.themoviedb.org/3/discover/movie', {
