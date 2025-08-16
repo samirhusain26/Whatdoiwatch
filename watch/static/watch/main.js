@@ -29,7 +29,6 @@ async function init() {
     genreSelect.appendChild(option);
   });
 }
-
 document.addEventListener('DOMContentLoaded', init);
 
 function renderMovies(id, movies) {
@@ -43,14 +42,6 @@ function movieCard(m) {
   return `<div class="movie-card"><img src="${m.poster}" alt="${m.title}"><div class="info"><h3>${m.title}</h3><p>${m.overview}</p><p class="small">Release: ${m.release_date}</p>${rating}<p class="small">Cast: ${m.cast.join(', ')}</p>${sources}</div></div>`;
 }
 
-async function findMovies() {
-  const genre = document.getElementById('genre').value;
-  const time = document.getElementById('time').value;
-  const res = await fetch(`/api/movies/?genre=${genre}&time=${time}`);
-  const data = await res.json();
-  renderMovies('movies', data);
-}
-
 async function searchMovies(q) {
   const sugg = document.getElementById('suggestions');
   if (q.length < 2) {
@@ -59,12 +50,17 @@ async function searchMovies(q) {
   }
   const res = await fetch(`/api/search/?query=${encodeURIComponent(q)}`);
   const data = await res.json();
-  sugg.innerHTML = data.map(m => `<div onclick="addMovie(${m.id}, '${m.title.replace(/'/g, "\'")}')">${m.title} (${m.release_date?.slice(0,4) || ''})</div>`).join('');
+  sugg.innerHTML = data
+    .map(
+      m =>
+        `<button type="button" class="list-group-item list-group-item-action" onclick="addMovie(${m.id}, '${m.title.replace(/'/g, "\\'")}')">${m.title} (${m.release_date?.slice(0,4) || ''})</button>`
+    )
+    .join('');
 }
 
 function addMovie(id, title) {
   if (selected.find(m => m.id === id) || selected.length >= 10) return;
-  selected.push({id, title});
+  selected.push({ id, title });
   document.getElementById('query').value = '';
   document.getElementById('suggestions').innerHTML = '';
   renderSelected();
@@ -77,15 +73,34 @@ function removeSelected(id) {
 
 function renderSelected() {
   const container = document.getElementById('selected');
-  container.innerHTML = selected.map(m => `<span onclick="removeSelected(${m.id})">${m.title}</span>`).join('');
+  container.innerHTML = selected
+    .map(m => `<span class="badge bg-primary me-1" onclick="removeSelected(${m.id})">${m.title}</span>`)
+    .join('');
 }
 
 async function getRecommendations() {
-  if (selected.length === 0) return;
   const ids = selected.map(m => m.id).join(',');
   const genre = document.getElementById('genre').value;
   const time = document.getElementById('time').value;
-  const res = await fetch(`/api/recommendations/?ids=${ids}&genre=${genre}&time=${time}`);
+  const params = new URLSearchParams();
+  if (ids) params.append('ids', ids);
+  if (genre) params.append('genre', genre);
+  if (time) params.append('time', time);
+  const res = await fetch(`/api/recommendations/?${params.toString()}`);
   const data = await res.json();
   renderMovies('recommendations', data);
+  document.getElementById('description').textContent = buildDescription(genre, time, selected);
+}
+
+function buildDescription(genre, time, selected) {
+  const g = genre ? genres.find(x => String(x.id) === String(genre))?.name : null;
+  const t = time ? timeOptions.find(x => x.value === time)?.label : null;
+  let desc = 'Showing';
+  if (g) desc += ` ${g}`;
+  desc += ' movies';
+  if (t) desc += ` from ${t.toLowerCase()}`;
+  if (selected.length) {
+    desc += ` based on: ${selected.map(m => m.title).join(', ')}`;
+  }
+  return desc + '.';
 }
