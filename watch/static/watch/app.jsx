@@ -79,28 +79,13 @@ function App() {
     setSelected(selected.filter(m => m.id !== id));
   };
 
-  const getRecommendations = async () => {
+
     const params = new URLSearchParams();
     if (selected.length) params.append('ids', selected.map(m => m.id).join(','));
     if (genre) params.append('genre', genre);
     if (time) params.append('time', time);
     setLoading(true);
-    try {
-      const res = await fetch(`/api/recommendations/?${params.toString()}`);
-      const data = await res.json();
-      setRecommendations(data);
-      const g = genre ? genres.find(x => String(x.id) === String(genre))?.name : null;
-      const t = time ? timeOptions.find(x => x.value === time)?.label : null;
-      let desc = 'Showing';
-      if (g) desc += ` ${g}`;
-      desc += ' movies';
-      if (t) desc += ` from ${t.toLowerCase()}`;
-      if (selected.length) desc += ` based on: ${selected.map(m => m.title).join(', ')}`;
-      desc += '.';
-      setDescription(desc);
-    } finally {
-      setLoading(false);
-    }
+
   };
 
   return (
