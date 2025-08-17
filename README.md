@@ -25,5 +25,3 @@ A Django web application for finding movies and generating recommendations using
 - Search movies and select up to 10 titles
 - Receive tailored recommendations
 - Responsive design for desktop and mobile
-
-Replace the placeholder API keys in settings before deploying. No Node build step is required; the React code is compiled in the browser.

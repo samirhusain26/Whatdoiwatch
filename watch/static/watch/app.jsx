@@ -79,12 +79,32 @@ function App() {
     setSelected(selected.filter(m => m.id !== id));
   };
 
+  const getRecommendations = () => {
+
 
     const params = new URLSearchParams();
     if (selected.length) params.append('ids', selected.map(m => m.id).join(','));
     if (genre) params.append('genre', genre);
     if (time) params.append('time', time);
     setLoading(true);
+
+    fetch(`/api/recommendations/?${params.toString()}`)
+      .then(res => res.json())
+      .then(data => {
+        setRecommendations(data);
+        const genreObj = genre ? genres.find(x => String(x.id) === String(genre)) : null;
+        const timeObj = time ? timeOptions.find(x => x.value === time) : null;
+        const g = genreObj ? genreObj.name : null;
+        const t = timeObj ? timeObj.label : null;
+        let desc = 'Showing';
+        if (g) desc += ` ${g}`;
+        desc += ' movies';
+        if (t) desc += ` from ${t.toLowerCase()}`;
+        if (selected.length) desc += ` based on: ${selected.map(m => m.title).join(', ')}`;
+        desc += '.';
+        setDescription(desc);
+      })
+      .finally(() => setLoading(false));
 
   };
 
@@ -147,4 +167,10 @@ function App() {
   );
 }
 
+
+document.addEventListener('DOMContentLoaded', () => {
+  ReactDOM.render(<App />, document.getElementById('root'));
+});
+
 ReactDOM.render(<App />, document.getElementById('root'));
+
