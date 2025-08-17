@@ -52,7 +52,7 @@ function showDetails(index) {
   document.getElementById('modalRelease').textContent = `Release: ${m.release_date}`;
   document.getElementById('modalRating').textContent = m.imdb_rating ? `IMDb: ${m.imdb_rating}` : '';
   document.getElementById('modalCast').textContent = `Cast: ${m.cast.join(', ')}`;
-  document.getElementById('modalSources').textContent = m.streaming_sources && m.streaming_sources.length ? `Available on: ${m.streaming_sources.join(', ')}` : '';
+
   document.getElementById('modalPoster').src = m.poster;
   const modal = new bootstrap.Modal(document.getElementById('movieModal'));
   modal.show();
@@ -67,10 +67,11 @@ async function searchMovies(q) {
   const res = await fetch(`/api/search/?query=${encodeURIComponent(q)}`);
   const data = await res.json();
   sugg.innerHTML = data
-    .map(
-      m =>
-        `<button type="button" class="list-group-item list-group-item-action" onclick="addMovie(${m.id}, '${m.title.replace(/'/g, "\\'")}')">${m.title} (${m.release_date?.slice(0,4) || ''})</button>`
-    )
+    .map(m => {
+      const titleEsc = m.title.replace(/'/g, "\\'");
+      const year = m.release_date ? m.release_date.slice(0, 4) : '';
+      return `<button type="button" class="list-group-item list-group-item-action" onclick="addMovie(${m.id}, '${titleEsc}')">${m.title} (${year})</button>`;
+    })
     .join('');
 }
 
