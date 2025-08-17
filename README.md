@@ -1,6 +1,6 @@
-# What Do I Watch? (Django)
+# What Do I Watch?
 
-A Django web application for finding movies and generating recommendations using the TMDB and Watchmode APIs. The interface is responsive for desktop and mobile and styled with a minimal streaming-site aesthetic.
+A Django web application for finding movies and generating recommendations using the TMDB and Watchmode APIs. The landing page is now powered by a lightweight React interface rendered in the browser, providing a modern, translucent look and a movie-poster modal experience.
 
 ## Setup
 
@@ -17,6 +17,7 @@ A Django web application for finding movies and generating recommendations using
    ```bash
    python manage.py runserver
    ```
+5. Open [http://localhost:8000/](http://localhost:8000/) in a browser to use the site.
 
 ## Features
 
@@ -26,3 +27,13 @@ A Django web application for finding movies and generating recommendations using
 - Responsive design for desktop and mobile
 
 Replace the placeholder API keys in settings before deploying.
+
+### Front-end build
+
+The React interface lives in `watch/static/watch/app.jsx`. If you modify it,
+rebuild the compiled script:
+
+```bash
+npm install   # first time only
+npm run build
+```
