@@ -80,11 +80,14 @@ function App() {
   };
 
   const getRecommendations = () => {
+
+
     const params = new URLSearchParams();
     if (selected.length) params.append('ids', selected.map(m => m.id).join(','));
     if (genre) params.append('genre', genre);
     if (time) params.append('time', time);
     setLoading(true);
+
     fetch(`/api/recommendations/?${params.toString()}`)
       .then(res => res.json())
       .then(data => {
@@ -102,6 +105,7 @@ function App() {
         setDescription(desc);
       })
       .finally(() => setLoading(false));
+
   };
 
   return (
@@ -163,6 +167,10 @@ function App() {
   );
 }
 
+
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(<App />, document.getElementById('root'));
 });
+
+ReactDOM.render(<App />, document.getElementById('root'));
+
