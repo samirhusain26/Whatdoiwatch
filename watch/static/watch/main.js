@@ -52,10 +52,7 @@ function showDetails(index) {
   document.getElementById('modalRelease').textContent = `Release: ${m.release_date}`;
   document.getElementById('modalRating').textContent = m.imdb_rating ? `IMDb: ${m.imdb_rating}` : '';
   document.getElementById('modalCast').textContent = `Cast: ${m.cast.join(', ')}`;
-  document.getElementById('modalSources').textContent =
-    m.streaming_sources && m.streaming_sources.length
-      ? `Available on: ${m.streaming_sources.join(', ')}`
-      : '';
+
   document.getElementById('modalPoster').src = m.poster;
   const modal = new bootstrap.Modal(document.getElementById('movieModal'));
   modal.show();
