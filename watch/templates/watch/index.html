@@ -2,69 +2,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>What Do I Watch?</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'watch/styles.css' %}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What Do I Watch?</title>
+  <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'watch/styles.css' %}">
+  <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 </head>
-<body class="text-white">
-<div class="container min-vh-100 d-flex flex-column justify-content-center">
-    <h1 class="text-center mb-4">What Do I Watch?</h1>
-    <div class="card glass-card p-4 mx-auto" style="max-width: 600px;">
-        <div class="mb-3">
-            <label for="genre" class="form-label">Genre</label>
-            <select id="genre" class="form-select">
-                <option value="">Any Genre</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="time" class="form-label">Year</label>
-            <select id="time" class="form-select">
-                <option value="">Any Time</option>
-            </select>
-        </div>
-        <div class="mb-3 position-relative">
-            <label for="query" class="form-label">Liked Movies</label>
-            <input id="query" type="text" class="form-control" placeholder="Search movies" oninput="searchMovies(this.value)">
-            <div id="suggestions" class="suggestions list-group"></div>
-        </div>
-        <div id="selected" class="selected mb-3"></div>
-        <button class="btn btn-primary w-100" onclick="getRecommendations()">Get Recommendations</button>
-    </div>
-    <div id="description" class="text-center mt-4"></div>
-
-    </div>
-    <div id="recommendations" class="movies mt-3 justify-content-center"></div>
-</div>
-
-<div class="modal fade" id="movieModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content glass-card text-white">
-      <div class="modal-body">
-        <div class="row">
-          <div class="col-md-8">
-            <h2 id="modalTitle"></h2>
-            <p id="modalOverview"></p>
-            <p id="modalRelease" class="small mb-0"></p>
-            <p id="modalRating" class="small mb-0"></p>
-            <p id="modalCast" class="small mb-0"></p>
-            <p id="modalSources" class="small mb-0"></p>
-          </div>
-          <div class="col-md-4 d-flex align-items-center">
-            <img id="modalPoster" class="img-fluid" alt="">
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{% static 'watch/main.js' %}"></script>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" src="{% static 'watch/app.jsx' %}"></script>
 </body>
 </html>
