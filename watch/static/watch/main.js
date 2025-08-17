@@ -10,6 +10,7 @@ const timeOptions = [
 
 let genres = [];
 let selected = [];
+let currentMovies = [];
 
 async function init() {
   const genreSelect = document.getElementById('genre');
@@ -32,14 +33,29 @@ async function init() {
 document.addEventListener('DOMContentLoaded', init);
 
 function renderMovies(id, movies) {
+  currentMovies = movies;
   const container = document.getElementById(id);
-  container.innerHTML = movies.map(m => movieCard(m)).join('');
+  container.innerHTML = movies.map((m, i) => movieCard(m, i)).join('');
+  container.querySelectorAll('.movie-card').forEach(card => {
+    card.addEventListener('click', () => showDetails(card.dataset.index));
+  });
 }
 
-function movieCard(m) {
-  const sources = m.streaming_sources && m.streaming_sources.length ? `<p class="small">Available on: ${m.streaming_sources.join(', ')}</p>` : '';
-  const rating = m.imdb_rating ? `<p class="small">IMDb: ${m.imdb_rating}</p>` : '';
-  return `<div class="movie-card"><img src="${m.poster}" alt="${m.title}"><div class="info"><h3>${m.title}</h3><p>${m.overview}</p><p class="small">Release: ${m.release_date}</p>${rating}<p class="small">Cast: ${m.cast.join(', ')}</p>${sources}</div></div>`;
+function movieCard(m, idx) {
+  return `<div class="movie-card" data-index="${idx}"><img src="${m.poster}" alt="${m.title}"></div>`;
+}
+
+function showDetails(index) {
+  const m = currentMovies[index];
+  document.getElementById('modalTitle').textContent = m.title;
+  document.getElementById('modalOverview').textContent = m.overview;
+  document.getElementById('modalRelease').textContent = `Release: ${m.release_date}`;
+  document.getElementById('modalRating').textContent = m.imdb_rating ? `IMDb: ${m.imdb_rating}` : '';
+  document.getElementById('modalCast').textContent = `Cast: ${m.cast.join(', ')}`;
+  document.getElementById('modalSources').textContent = m.streaming_sources && m.streaming_sources.length ? `Available on: ${m.streaming_sources.join(', ')}` : '';
+  document.getElementById('modalPoster').src = m.poster;
+  const modal = new bootstrap.Modal(document.getElementById('movieModal'));
+  modal.show();
 }
 
 async function searchMovies(q) {
@@ -86,10 +102,16 @@ async function getRecommendations() {
   if (ids) params.append('ids', ids);
   if (genre) params.append('genre', genre);
   if (time) params.append('time', time);
-  const res = await fetch(`/api/recommendations/?${params.toString()}`);
-  const data = await res.json();
-  renderMovies('recommendations', data);
-  document.getElementById('description').textContent = buildDescription(genre, time, selected);
+  const bar = document.getElementById('loading');
+  bar.style.display = 'block';
+  try {
+    const res = await fetch(`/api/recommendations/?${params.toString()}`);
+    const data = await res.json();
+    renderMovies('recommendations', data);
+    document.getElementById('description').textContent = buildDescription(genre, time, selected);
+  } finally {
+    bar.style.display = 'none';
+  }
 }
 
 function buildDescription(genre, time, selected) {
