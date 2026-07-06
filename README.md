@@ -1,203 +1,139 @@
-# What Do I Watch?
+# What Do I Watch
 
-A Django + React web application for discovering movies and generating personalized recommendations using the **TMDB** and **Watchmode** APIs. Features a modern, glassmorphic UI with movie poster modals and streaming source information.
+A universal (web + iOS + Android) movie/TV recommendation app built with Expo Router. Pick
+filters or search for titles you like, and get a hybrid recommendation blend of a local
+content-based ML model (cosine similarity over genres/keywords/cast/director) and TMDB's live
+recommendations — for both movies and TV, mixed together. Includes a "Surprise Me" random-pick
+flow, an on-device watchlist with seen/not-interested feedback, and streaming-provider info
+per region.
 
----
+The app lives in [`whatdoiwatch-app/`](whatdoiwatch-app/). This root holds the application, the detailed system documentation, the remaining implementation plan, and a backup of the two legacy apps this replaced (Django + React, and Flask) — see [`_legacy_backup/`](_legacy_backup/) below.
 
-## Features
+## Documentation
 
-- **📺 Browse by Genre & Time Period** – Filter movies by genre and release date (this month, decade, century, classic eras)
-- **🔍 Smart Search** – Search TMDB's database with autocomplete suggestions
-- **❤️ Liked Movies Selection** – Select up to 10 movies you've enjoyed to power recommendations
-- **🎬 Personalized Recommendations** – Get tailored movie suggestions based on your selections
-- **📊 Rich Movie Details** – View cast, IMDB ratings, and where to stream via Watchmode integration
-- **🎨 Modern Glassmorphic UI** – Translucent cards, smooth animations, and responsive design
-- **📱 Mobile-Friendly** – Fully responsive layout for desktop and mobile
+For deep-dives into specific aspects of the codebase, see the dedicated documentation files:
+*   **User Interface & Design System**: [docs/UI.md](docs/UI.md) — Color tokens, custom primitives, and guidelines.
+*   **System Architecture & Flow**: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — Server-client boundaries and the recommender engine.
+*   **Database Schema & ML Pipeline**: [docs/DATABASE.md](docs/DATABASE.md) — DB layouts, offline Python scraper, vectorization, and database seeding.
 
----
+## Stack
 
-## Tech Stack
-
-| Layer       | Technology                          |
-|-------------|-------------------------------------|
-| Backend     | Django 4.2 (Python)                 |
-| Frontend    | React 17 (JSX via Babel)            |
-| Database    | SQLite (default)                    |
-| APIs        | TMDB API, Watchmode API             |
-| Styling     | Vanilla CSS (glassmorphism design)  |
-| Build Tools | Babel (optional pre-compilation)    |
-
----
-
-## Project Structure
-
-```
-Whatdoiwatch/
-├── manage.py                 # Django management script
-├── requirements.txt          # Python dependencies
-├── package.json              # Node.js/Babel config for JSX compilation
-├── db.sqlite3                # SQLite database
-│
-├── whatdoiwatch/             # Django project settings
-│   ├── settings.py           # Configuration (incl. API keys)
-│   ├── urls.py               # Root URL routing
-│   ├── wsgi.py / asgi.py     # WSGI/ASGI entry points
-│   └── __init__.py
-│
-└── watch/                    # Main Django app
-    ├── views.py              # API endpoints & page rendering
-    ├── urls.py               # App-level URL patterns
-    ├── utils.py              # Helper functions (date ranges, Watchmode API)
-    ├── models.py             # Database models (unused currently)
-    ├── admin.py              # Admin configuration
-    ├── apps.py               # App config
-    ├── tests.py              # Test stubs
-    │
-    ├── templates/watch/
-    │   └── index.html        # Main HTML template (loads React)
-    │
-    └── static/watch/
-        ├── app.jsx           # React components (main app logic)
-        ├── app.js            # Compiled JS (from Babel)
-        └── styles.css        # CSS styles (glassmorphism theme)
-```
-
----
-
-## API Endpoints
-
-| Endpoint                | Method | Description                                    |
-|-------------------------|--------|------------------------------------------------|
-| `/`                     | GET    | Serves the main React application              |
-| `/api/genres/`          | GET    | Returns list of movie genres from TMDB         |
-| `/api/movies/`          | GET    | Discover movies by genre/time (returns top 5)  |
-| `/api/search/?query=`   | GET    | Search movies by title (returns top 10)        |
-| `/api/recommendations/` | GET    | Get recommendations based on selected movies   |
-
-**Query Parameters for `/api/recommendations/`:**
-- `ids` – Comma-separated TMDB movie IDs (from liked movies)
-- `genre` – Genre ID to filter by
-- `time` – Time period (`this_month`, `this_year`, `this_decade`, `last_decade`, `this_century`, `old`, `ancient`)
-
----
+| Layer | Choice |
+|---|---|
+| Framework | Expo SDK 57 + Expo Router (file-based routing, universal web + native) |
+| Language | TypeScript (strict) |
+| Backend | Expo API Routes (server code in the same repo, Node.js) |
+| Database | SQLite — server DB via `node:sqlite` + Drizzle ORM (read-only, seeded from the ML pipeline); on-device watchlist via `expo-sqlite` + Drizzle (native) / `localStorage` fallback (web) |
+| Styling | NativeWind v4 (Tailwind for React Native) |
+| Data fetching | TanStack React Query |
+| External APIs | TMDB (search, discover, details, videos, watch providers), Watchmode (IMDb rating only) |
+| ML | Offline Python scripts (pandas + scikit-learn) — no Python at runtime |
 
 ## Setup
 
-### Prerequisites
+```bash
+cd whatdoiwatch-app
+npm install
+```
 
-- Python 3.9+
-- Node.js 16+ (optional, for Babel compilation)
-- TMDB API key ([get one here](https://www.themoviedb.org/settings/api))
-- Watchmode API key ([get one here](https://api.watchmode.com/)) – optional but recommended
+Create `whatdoiwatch-app/.env` with your API keys (never commit this file):
 
-### Installation
+```
+TMDB_API_KEY=your_tmdb_v3_api_key
+WATCHMODE_API_KEY=your_watchmode_api_key
+```
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/Whatdoiwatch.git
-   cd Whatdoiwatch
-   ```
+Get a free TMDB API key at https://www.themoviedb.org/settings/api and a Watchmode key at
+https://api.watchmode.com/.
 
-2. **Create and activate a virtual environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install Python dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Configure Environment Variables**
-   
-   Create a `.env` file in the root directory (same level as `manage.py`) and add your keys:
-   ```bash
-   TMDB_API_KEY=your_tmdb_api_key_here
-   WATCHMODE_API_KEY=your_watchmode_api_key_here
-   SECRET_KEY=your_django_secret_key
-   DEBUG=True
-   ALLOWED_HOSTS=localhost,127.0.0.1
-   ```
-
-5. **Run database migrations**
-   ```bash
-   python manage.py migrate
-   ```
-
-6. **Start the development server**
-   ```bash
-   python manage.py runserver
-   ```
-
-7. **Open the app** – Navigate to [http://localhost:8000/](http://localhost:8000/)
-
-### Optional: Build JSX with Babel
-
-The app uses in-browser Babel transformation by default. For production or faster loading:
+## Running locally
 
 ```bash
-npm install
-npm run build
+cd whatdoiwatch-app
+npm run web       # web, http://localhost:8081
+npm run ios       # iOS simulator (requires Xcode)
+npm run android   # Android emulator (requires Android Studio)
 ```
 
-Then update `index.html` to load `app.js` instead of `app.jsx`.
+All three run `expo start --clear` — the `--clear` flag is intentional and load-bearing: Metro's
+bundle cache doesn't reliably invalidate across certain resolver/config changes in this project
+(see `metro.config.js`), so every dev-server start does a clean rebuild rather than risk serving
+a stale bundle.
 
----
+The server DB (`whatdoiwatch-app/data/app.db`) ships pre-seeded with a full TMDB corpus (~16k
+movies + TV titles and their precomputed similarity neighbors) — the app works out of the box
+with no extra setup beyond `.env` and `npm install`.
 
-## Usage
+## The dataset pipeline (build → export → seed)
 
-1. **Select a Genre** – Choose from any of TMDB's movie genres
-2. **Pick a Time Period** – Filter by release date range
-3. **Add Liked Movies** – Search and select up to 10 movies you've enjoyed
-4. **Get Recommendations** – Click the button to receive 5 personalized suggestions
-5. **View Details** – Click any movie poster to see:
-   - Full plot overview
-   - Release date
-   - IMDB rating (if available)
-   - Cast information
-   - Streaming sources (via Watchmode)
+The recommendation engine's local half comes from an offline pipeline that must be rerun
+manually to refresh the corpus (see "Corpus refresh" below). It has three steps, all in
+`whatdoiwatch-app/scripts/`:
 
----
+```bash
+cd whatdoiwatch-app
 
-## Configuration
+# 1. Set up a Python environment for the pipeline scripts (one-time)
+python3 -m venv scripts/.venv
+scripts/.venv/bin/pip install -r scripts/requirements.txt
 
-### Environment Variables (Recommended for Production)
+# 2. Build the corpus: pages through TMDB /discover, fetches genres/keywords/
+#    cast/director per title, writes data/corpus.parquet. Checkpointed to
+#    data/checkpoint.jsonl — safe to Ctrl-C and rerun, it resumes.
+scripts/.venv/bin/python3 scripts/build_dataset.py --mode full
+#   (or --mode test for a quick ~500-title smoke test first)
 
-Instead of hardcoding API keys in `settings.py`, use environment variables:
+# 3. Compute nearest-neighbor similarity: one CountVectorizer + cosine_similarity
+#    over the whole corpus (movies + TV together, so cross-type recs fall out
+#    for free), writes data/neighbors.json + data/titles_meta.json.
+scripts/.venv/bin/python3 scripts/export_neighbors.py
 
-```python
-import os
-
-TMDB_API_KEY = os.environ.get("TMDB_API_KEY", "")
-WATCHMODE_API_KEY = os.environ.get("WATCHMODE_API_KEY", "")
+# 4. Load it into the server DB (titles + similar_titles tables).
+npx tsx scripts/seed.ts
 ```
 
-### Time Period Categories
+### Manual corpus refresh
 
-The `utils.py` file defines the following time period filters:
+Per the locked design decision, the corpus is refreshed **manually**, not on a schedule — rerun
+the four steps above every few months when recommendations start feeling stale. TMDB's own
+`/recommendations` endpoint (blended in live, at 40% weight, alongside the local model's 60%)
+covers new releases in the meantime, so staleness degrades gracefully between refreshes.
 
-| Category       | Date Range         |
-|----------------|--------------------|
-| `this_month`   | Current month      |
-| `this_year`    | Current year       |
-| `this_decade`  | 2020 – Present     |
-| `last_decade`  | 2010 – 2019        |
-| `this_century` | 2000 – Present     |
-| `old`          | 1980 – 1999        |
-| `ancient`      | Before 1980        |
+## Environment variables
 
----
+| Variable | Used by | Notes |
+|---|---|---|
+| `TMDB_API_KEY` | API routes, `scripts/build_dataset.py` | Server-only — never bundled to the client (verified via `npx expo export` + grep) |
+| `WATCHMODE_API_KEY` | API routes (detail endpoint only) | Free tier caps at 1,000 req/month; cached 7 days in `api_cache`, so real usage stays far under that |
 
-## License
+## Deploying (not done in this build)
 
-ISC
+This build is local-only per its scope — deploying to EAS Hosting (web + API routes) and
+submitting to the App Store / Play Store needs accounts only you can provide. Checklist:
 
----
+- [ ] `eas login`, then `eas deploy` to publish web + API routes to EAS Hosting
+- [ ] Set `TMDB_API_KEY` / `WATCHMODE_API_KEY` as EAS Hosting environment secrets (`eas env:create`) — never bundle them
+- [ ] Set the `origin` field in `app.json`/`app.config` to the deployed URL so native builds call the hosted API instead of localhost
+- [ ] `eas build` for iOS and Android; internal TestFlight track and Play Console closed-testing track (Play requires a testing period with 12+ testers for personal accounts — start this early)
+- [ ] Store listing assets: app icon, splash screen, screenshots per platform, listing copy
+- [ ] Submit both for review
 
-## Acknowledgments
+## `_legacy_backup/`
 
-- [TMDB](https://www.themoviedb.org/) – Movie data and images
-- [Watchmode](https://www.watchmode.com/) – Streaming availability data
-- [React](https://reactjs.org/) – UI library
-- [Django](https://www.djangoproject.com/) – Backend framework
+Contains the two apps this replaced, moved (not deleted) so nothing is lost:
+- `watch/`, `whatdoiwatch/`, `manage.py`, `requirements.txt`, `db.sqlite3` — the original Django
+  app
+- `binge-it-on/` — the original Flask + scikit-learn app (including its own nested `.git/`)
+- `package.json` / `package-lock.json` — the old root Babel/JSX build tooling
+- `data_pipeline_working_dir/` — the scratch directory the ML pipeline ran in before its scripts
+  and output were moved into `whatdoiwatch-app/scripts/` and `whatdoiwatch-app/data/`; keeps the
+  raw fetch checkpoint in case the corpus ever needs to be rebuilt without re-paying API rate
+  limits
+- `root.env` — the original repo-root `.env` (Django `SECRET_KEY`/`DEBUG`/`ALLOWED_HOSTS`, plus
+  the TMDB/Watchmode keys, which are now live in `whatdoiwatch-app/.env`)
+- `PROJECTS_OVERVIEW.md` — described the two retired apps
+
+## `IMPLEMENTATION_PLAN.md`
+
+The original build spec, now trimmed to just the remaining account-dependent work (deployment
+and store submission) — see that file for what's still outstanding.

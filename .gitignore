@@ -1,5 +1,44 @@
+.DS_Store
+node_modules/
+
+# local database
+sqlite_mcp_server.db
+*.db
+*.db-*
+
+# agent & tooling configuration
+.claude/
+.playwright-mcp/
+
+# env files
+.env
+.env*.local
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+ios/
+android/
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# Python / Virtual Environments
+.venv/
+venv/
 __pycache__/
 *.pyc
-db.sqlite3
-*.env
-node_modules/
+
+# TypeScript
+*.tsbuildinfo

@@ -1,0 +1,60 @@
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# env files (contain TMDB_API_KEY / WATCHMODE_API_KEY secrets)
+.env
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+example
+
+# generated native folders
+/ios
+/android
+
+# server DB (seeded from the ML pipeline, regenerate via scripts/seed.ts)
+data/*.db
+data/*.db-*
+
+# ML pipeline intermediate output (regenerate via scripts/build_dataset.py +
+# scripts/export_neighbors.py) — corpus.parquet is kept, it's the reusable
+# regeneration input; the JSON exports are large, regeneratable, and only
+# ever needed transiently as seed.ts's input.
+data/neighbors.json
+data/titles_meta.json
+data/checkpoint.jsonl
+data/state.json
+
+# Python venv for the data pipeline scripts
+scripts/.venv/
